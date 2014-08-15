@@ -66,7 +66,7 @@ class Responses
     end
 
     def joke
-      parse_json_url('https://webknox-jokes.p.mashape.com/jokes/random')[:joke]
+      parse_json_url('http://api.icndb.com/jokes/random')[:value][:joke]
     end
 
     def cute
