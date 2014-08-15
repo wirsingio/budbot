@@ -8,15 +8,6 @@ require 'google-search'
 DUNNO = "I don't understand..."
 
 helpers do
-  def parse_for key, str
-    str.each_line do |line|
-      k, v = line.split("=", 2)
-      if k == key
-        return v.strip
-      end
-    end
-  end
-
   def parse_text(text, trigger)
     if text
       command = text.match(/\A#{trigger}\s*(.*)\z/).captures.first
@@ -37,8 +28,8 @@ end
 
 post "/run" do
   body     = request.body.read
-  trigger  = parse_for("trigger_word", body)
-  text     = parse_for("text", body)
+  trigger  = params[:trigger_word]
+  text     = params[:text]
   command  = parse_text(text, trigger)
   text     = run!(command)
   JSON.dump(text: text)
