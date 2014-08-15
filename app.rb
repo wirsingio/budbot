@@ -1,5 +1,7 @@
 require 'json'
 
+DUNNO = "I don't understand..."
+
 helpers do
   def parse_for key, str
     str.each_line do |line|
@@ -9,26 +11,30 @@ helpers do
       end
     end
   end
-end
 
-post "/run" do
-  dunno = "I don't understand..."
-  body   = request.body.read
-  puts body
-  puts "#" * 50
-  puts params.inspect
-
-  trigger = params[:trigger_word] || parse_for("trigger_word", body)
-  text = params[:text]            || parse_for("text", body)
-  if text
-    command = text.match(/\A#{trigger}\s*(.*)\z/).captures.first
-    puts text.match(/\A#{trigger}\s*(.*)\z/).captures.first
-    if command
-      if command =~ /time\?/
-        response = Time.now.to_s
+  def parse_text(text, trigger)
+    if text
+      command = text.match(/\A#{trigger}\s*(.*)\z/).captures.first
+      case command
+      when "time?" then Responses.time
+      else DUNNO
       end
     end
   end
-  response ||= dunno
+end
+
+post "/run" do
+  body     = request.body.read
+  trigger  = params[:trigger_word]     || parse_for("trigger_word", body)
+  text     = params[:text]             || parse_for("text", body)
+  response = parse_text(text, trigger) || DUNNO
   JSON.dump(text: response)
+end
+
+class Responses
+  class << self
+    def time
+      Time.now.to_s
+    end
+  end
 end
