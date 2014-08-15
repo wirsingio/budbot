@@ -1,4 +1,7 @@
 require 'json'
+require 'uri'
+require 'net/http'
+
 require "bundler/setup"
 require 'google-search'
 
@@ -18,8 +21,9 @@ helpers do
     if text
       command = text.match(/\A#{trigger}\s*(.*)\z/).captures.first
       case command
-      when "time?" then Responses.time
-      when "bud" then Responses.bud
+      when "time"    then Responses.time
+      when "bud"     then Responses.bud
+      when "weather" then Responses.weather
       else DUNNO
       end
     end
@@ -44,6 +48,16 @@ class Responses
       res = Google::Search::Image.new(query: "Bud", image_size: :large, file_type: :jpg)
       images = res.all
       images.sample.uri if images.any?
+    end
+
+    def weather
+      url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Wien,at&mode=json&units=metric&cnt=7"
+      body = Net::HTTP.get_response(URI(url)).body
+      days = JSON.parse(body, symbolize_names: true)[:list]
+      days.map { |day|
+        Time.at(day[:dt]).strftime("%a") + ": #{day[:temp][:day]}C"
+      }
+      .join("\n")
     end
   end
 end
