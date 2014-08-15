@@ -1,3 +1,6 @@
+require 'json'
+
 post "/run" do
-  Time.now.to_s
+
+  JSON.dump(text: Time.now.to_s)
 end
