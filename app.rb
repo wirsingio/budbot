@@ -25,6 +25,7 @@ helpers do
       when "bud"     then Responses.bud
       when "weather" then Responses.weather
       when "cute"    then Responses.cute
+      when "bye"     then "See you later"
       else DUNNO
       end
     end
