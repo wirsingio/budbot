@@ -54,7 +54,7 @@ class Responses
       url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=#{days_in_query}"
       data = parse_json_url url
       days = data[:list]
-      days = days.slice(in_days - 1, 1) if in_days
+      days = days.slice(in_days - 2, 1) if in_days
       days
         .map { |day|
           Time.at(day[:dt]).strftime("%a") + ": #{day[:temp][:day]}C"
