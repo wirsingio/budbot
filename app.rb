@@ -49,7 +49,7 @@ class Responses
     def weather(command)
       # only matches cities with one word so far
       city, in_days = [/in ([a-zA-Z]+)/, /in (\d+) days/]
-        .map(&:to_a).map(&:last)
+        .map { |regexp| command.match(regexp) }.map(&:to_a).map(&:last)
       city ||= 'Wien'
 
       days_in_query = in_days ? in_days.to_i + 1 : 7
