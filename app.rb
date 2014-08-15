@@ -18,7 +18,7 @@ helpers do
     case command
     when "time"    then Responses.time
     when "bud"     then Responses.bud
-    when "weather" then Responses.weather
+    when /weather/ then Responses.weather(command)
     when "cute"    then Responses.cute
     when "bye"     then "See you later"
     else DUNNO
@@ -46,11 +46,16 @@ class Responses
       images.sample.uri if images.any?
     end
 
-    def weather
-      url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=Wien,at&mode=json&units=metric&cnt=7"
+    def weather(command)
+      # only matches cities with one word so far
+      city = command.match(/in ([a-zA-Z]+)/).to_a.last
+      in_days = command.match(/in (\d+) days/).to_a.last.to_i
+      days_in_query = [7, in_days].compact.max
+      url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=#{days_in_query}"
       data = parse_json_url url
       days = data[:list]
-      data[:list]
+      days.slice!(in_days, 1) if in_days
+      days
         .map { |day|
           Time.at(day[:dt]).strftime("%a") + ": #{day[:temp][:day]}C"
         }
