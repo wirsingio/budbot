@@ -10,7 +10,7 @@ DUNNO = "I don't understand..."
 helpers do
   def parse_text(text, trigger)
     if text
-      command = text.match(/\A#{trigger}\s*(.*)\z/).captures.first
+      text.match(/\A#{trigger}\s*(.*)\z/).captures.first
     end
   end
 
@@ -27,7 +27,6 @@ helpers do
 end
 
 post "/run" do
-  body     = request.body.read
   trigger  = params[:trigger_word]
   text     = params[:text]
   command  = parse_text(text, trigger)
