@@ -37,8 +37,8 @@ end
 
 post "/run" do
   body     = request.body.read
-  trigger  = params[:trigger_word]     || parse_for("trigger_word", body)
-  text     = params[:text]             || parse_for("text", body)
+  trigger  = parse_for("trigger_word", body)
+  text     = parse_for("text", body)
   command  = parse_text(text, trigger)
   text     = run!(command)
   JSON.dump(text: text)
