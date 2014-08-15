@@ -48,15 +48,24 @@ class Responses
 
     def weather(command)
       # only matches cities with one word so far
-      city, in_days = [/in ([a-zA-Z]+)/, /in (\d+) days/]
-        .map { |regexp| command.match(regexp) }.map(&:to_a).map(&:last)
-      city ||= 'Wien'
-
-      days_in_query = in_days ? in_days.to_i + 1 : 7
-      url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=#{days_in_query}"
+<<<<<<< HEAD
+      city = command.match(/in ([a-zA-Z]+)/).captures.first || 'Wien'
+      in_days = command.match(/in (\d+) days/).captures.first.to_i
+      days_in_query = [7, in_days].compact.min
+      url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=7"
       data = parse_json_url url
       days = data[:list]
       days = days.slice(days_in_query, 1) if in_days
+=======
+      city = command.match(/in ([a-zA-Z]+)/).to_a.last || 'Wien'
+      in_days = command.match(/in (\d+) days/).to_a.last
+      days_in_query = in_days || 7
+      url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=#{days_in_query}"
+      STDERR.puts "querying: #{url}"
+      data = parse_json_url url
+      days = data[:list]
+      days = days.slice(in_days.to_i, 1) if in_days
+>>>>>>> heroku/master
       days
         .map { |day|
           Time.at(day[:dt]).strftime("%a") + ": #{day[:temp][:day]}C"
