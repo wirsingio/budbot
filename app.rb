@@ -66,22 +66,11 @@ class Responses
     end
 
     def joke
-      joke_links = "p+ font a"
-      base = "http://www.randomjoke.com"
-      doc  = get_doc_from_url("http://www.randomjoke.com/topiclist.html")
-      joke_links = doc.css(joke_links).map { |link| link[:href] }
-      joke_page  = get_doc_from_url("%s/%s" % [base, joke_links.sample])
-      joke_lines = joke_page
-                     .css("blockquote , br~ p+ p")
-                     .map { |p| p.text if p }
-                     .compact
-      # this is because the site's html is from the 90's
-      if joke_lines.size == 2
-        joke_lines = joke_lines.reverse
-      end
-      joke_lines
-        .join("\n")
-        .strip
+      url = "http://theoatmeal.com/djtaf/"
+      doc = get_doc_from_url(url)
+      joke      = doc.at_css(".part1").text.strip
+      punchline = doc.at_css(".part2").text.strip
+      "%s\n\n\n\n\n%s" % [joke, punchline]
     end
 
     def cute
