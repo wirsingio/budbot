@@ -48,13 +48,13 @@ class Responses
 
     def weather(command)
       # only matches cities with one word so far
-      city = command.match(/in ([a-zA-Z]+)/).to_a.last || 'Wien'
-      in_days = command.match(/in (\d+) days/).to_a.last.to_i
-      days_in_query = [7, in_days].compact.max
-      url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=#{days_in_query}"
+      city = command.match(/in ([a-zA-Z]+)/).captures.first || 'Wien'
+      in_days = command.match(/in (\d+) days/).captures.first.to_i
+      days_in_query = [7, in_days].compact.min
+      url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=7"
       data = parse_json_url url
       days = data[:list]
-      days = days.slice(in_days - 2, 1) if in_days
+      days = days.slice(days_in_query, 1) if in_days
       days
         .map { |day|
           Time.at(day[:dt]).strftime("%a") + ": #{day[:temp][:day]}C"
