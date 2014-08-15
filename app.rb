@@ -1,4 +1,6 @@
 require 'json'
+require "bundler/setup"
+require 'google-search'
 
 DUNNO = "I don't understand..."
 
@@ -17,6 +19,7 @@ helpers do
       command = text.match(/\A#{trigger}\s*(.*)\z/).captures.first
       case command
       when "time?" then Responses.time
+      when "bud" then Responses.bud
       else DUNNO
       end
     end
@@ -35,6 +38,12 @@ class Responses
   class << self
     def time
       Time.now.to_s
+    end
+
+    def bud
+      res = Google::Search::Image.new(query: "Bud", image_size: :large, file_type: :jpg)
+      images = res.all
+      images.sample.uri if images.any?
     end
   end
 end
