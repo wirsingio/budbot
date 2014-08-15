@@ -48,8 +48,10 @@ class Responses
 
     def weather(command)
       # only matches cities with one word so far
-      city = command.match(/in ([a-zA-Z]+)/).to_a.last || 'Wien'
-      in_days = command.match(/in (\d+) days/).to_a.last
+      city, in_days = [/in ([a-zA-Z]+)/, /in (\d+) days/]
+        .map(&:to_a).map(&:last)
+      city ||= 'Wien'
+
       days_in_query = in_days ? in_days.to_i + 1 : 7
       url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=#{days_in_query}"
       data = parse_json_url url
