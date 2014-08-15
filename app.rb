@@ -22,6 +22,7 @@ helpers do
     when /weather/ then Responses.weather(command)
     when "cute"    then Responses.cute
     when /insult/  then Responses.insult(command)
+    when /joke/    then Responses.joke
     when "bye"     then "See you later"
     else DUNNO
     end
@@ -62,6 +63,10 @@ class Responses
           Time.at(day[:dt]).strftime("%a") + ": #{day[:temp][:day]}C"
         }
         .join("\n")
+    end
+
+    def joke
+      parse_json_url('https://webknox-jokes.p.mashape.com/jokes/random')[:joke]
     end
 
     def cute
