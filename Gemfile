@@ -5,3 +5,4 @@ gem 'sinatra'
 gem 'thin'
 gem 'pry', require: false
 gem 'google-search'
+gem 'nokogiri'

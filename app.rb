@@ -4,13 +4,14 @@ require 'net/http'
 
 require "bundler/setup"
 require 'google-search'
+require 'nokogiri'
 
 DUNNO = "I don't understand..."
 
 helpers do
   def parse_text(text, trigger)
     if text
-      text.match(/\A#{trigger}\s*(.*)\z/).captures.first
+      text.match(/\A#{trigger}\s*(.*)\z/).to_a.last
     end
   end
 
@@ -20,6 +21,7 @@ helpers do
     when "bud"     then Responses.bud
     when /weather/ then Responses.weather(command)
     when "cute"    then Responses.cute
+    when /insult/  then Responses.insult(command)
     when "bye"     then "See you later"
     else DUNNO
     end
@@ -48,8 +50,8 @@ class Responses
 
     def weather(command)
       # only matches cities with one word so far
-      city = command.match(/in ([a-zA-Z]+)/).captures.first || 'Wien'
-      in_days = command.match(/in (\d+) days/).captures.first.to_i
+      city = command.match(/in ([a-zA-Z]+)/).to_a.last || 'Wien'
+      in_days = command.match(/in (\d+) days/).to_a.last.to_i
       days_in_query = [7, in_days].compact.min
       url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=7"
       data = parse_json_url url
@@ -69,6 +71,15 @@ class Responses
         .map { |image| image[:data][:url] }
         .select { |link| File.extname(link) == ".jpg" }
         .sample
+    end
+
+    def insult(command)
+      user = command.split(" ", 2).last
+      uri = URI.parse("http://www.insult-generator.org/")
+      response = Net::HTTP.get_response(uri)
+      doc = Nokogiri::HTML(response.body)
+      text = doc.css('#insult .text').text
+      "@#{user} is a #{text}"
     end
 
     private
