@@ -66,7 +66,18 @@ class Responses
     end
 
     def joke
-      parse_json_url('http://api.icndb.com/jokes/random')[:value][:joke]
+      joke_links = "p+ font a"
+      base = "http://www.randomjoke.com"
+      doc = get_doc_from_url("http://www.randomjoke.com/topiclist.html")
+      joke_links = doc.css(joke_links).map { |link| link[:href] }
+      joke_page = get_doc_from_url("%s/%s" % [base, joke_links.sample])
+      joke_page
+        .css("blockquote , br~ p+ p")
+        .map { |p| p.text if p }
+        .compact
+        .reverse
+        .join("\n")
+        .strip
     end
 
     def cute
@@ -80,9 +91,7 @@ class Responses
 
     def insult(command)
       user = command.split(" ", 2).last
-      uri = URI.parse("http://www.insult-generator.org/")
-      response = Net::HTTP.get_response(uri)
-      doc = Nokogiri::HTML(response.body)
+      doc  = get_doc_from_url("http://www.insult-generator.org/")
       text = doc.css('#insult .text').text
       "@#{user} is a #{text}"
     end
@@ -92,6 +101,11 @@ class Responses
     def parse_json_url url
       body = Net::HTTP.get_response(URI(url)).body
       JSON.parse(body, symbolize_names: true)
+    end
+
+    def get_doc_from_url uri
+      res = Net::HTTP.get_response(URI.parse(uri))
+      Nokogiri::HTML(res.body)
     end
   end
 end
