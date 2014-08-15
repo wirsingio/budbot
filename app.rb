@@ -52,7 +52,7 @@ class Responses
       in_days = command.match(/in (\d+) days/).to_a.last
       days_in_query = in_days || 7
       url = "http://api.openweathermap.org/data/2.5/forecast/daily?q=#{city}&mode=json&units=metric&cnt=#{days_in_query}"
-      puts "querying: #{url}"
+      STDERR.puts "querying: #{url}"
       data = parse_json_url url
       days = data[:list]
       days = days.slice(in_days.to_i, 1) if in_days
