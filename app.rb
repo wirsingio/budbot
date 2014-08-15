@@ -20,14 +20,17 @@ helpers do
   def parse_text(text, trigger)
     if text
       command = text.match(/\A#{trigger}\s*(.*)\z/).captures.first
-      case command
-      when "time"    then Responses.time
-      when "bud"     then Responses.bud
-      when "weather" then Responses.weather
-      when "cute"    then Responses.cute
-      when "bye"     then "See you later"
-      else DUNNO
-      end
+    end
+  end
+
+  def run!(command)
+    case command
+    when "time"    then Responses.time
+    when "bud"     then Responses.bud
+    when "weather" then Responses.weather
+    when "cute"    then Responses.cute
+    when "bye"     then "See you later"
+    else DUNNO
     end
   end
 end
@@ -36,8 +39,9 @@ post "/run" do
   body     = request.body.read
   trigger  = params[:trigger_word]     || parse_for("trigger_word", body)
   text     = params[:text]             || parse_for("text", body)
-  response = parse_text(text, trigger) || DUNNO
-  JSON.dump(text: response)
+  command  = parse_text(text, trigger)
+  text     = run!(command)
+  JSON.dump(text: text)
 end
 
 class Responses
