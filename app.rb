@@ -7,8 +7,6 @@ require 'google-search'
 require 'nokogiri'
 require_relative 'lib/budbot'
 
-DUNNO = "I don't understand..."
-
 Budbot::Dispatcher.register Budbot::Commands::TimeCommand
 
 helpers do
