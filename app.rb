@@ -5,8 +5,9 @@ require 'net/http'
 require "bundler/setup"
 require 'google-search'
 require 'nokogiri'
+require_relative 'lib/budbot'
 
-DUNNO = "I don't understand..."
+Budbot::Dispatcher.register Budbot::Commands::TimeCommand
 
 helpers do
   def parse_text(text, trigger)
@@ -17,14 +18,13 @@ helpers do
 
   def run!(command)
     case command
-    when "time"    then Responses.time
     when "bud"     then Responses.bud
     when /weather/ then Responses.weather(command)
     when "cute"    then Responses.cute
     when /insult/  then Responses.insult(command)
     when /joke/    then Responses.joke
     when "bye"     then "See you later"
-    else DUNNO
+    else Budbot::Dispatcher.dispatch(command).call
     end
   end
 end
@@ -39,10 +39,6 @@ end
 
 class Responses
   class << self
-    def time
-      Time.now.to_s
-    end
-
     def bud
       res = Google::Search::Image.new(query: "Bud", image_size: :large, file_type: :jpg)
       images = res.all
