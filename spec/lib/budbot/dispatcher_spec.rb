@@ -1,28 +1,34 @@
-require_relative '../../../lib/budbot/dispatcher'
+require 'spec_helper'
 
-describe Butbot::Dispatcher do
-  def command_class(class_name, keyword: keyword)
-    test_command_class = Class.new do
-      define_singleton_method :keyword do
-        keyword
+module Budbot
+  describe Dispatcher do
+    def command_class(keyword: keyword)
+      Class.new do
+        define_singleton_method :keyword do
+          keyword
+        end
       end
     end
-    stub_const("TestCommand", test_command_class)
-  end
 
-  def random_keyword
-    ('a'..'z').to_a.sample(5).join
-  end
+    def random_keyword
+      ('a'..'z').to_a.sample(5).join.to_sym
+    end
 
-  it "maps a command string to a command object" do
-    some_command_class = command_class("SomeCommand", keyword: random_keyword)
-    Butbot::Dispatcher.register(some_command_class)
+    it 'maps a command string to a command object' do
+      some_command_class = command_class(keyword: random_keyword)
+      Dispatcher.register(some_command_class)
 
-    keyword = random_keyword
-    desired_command_class = command_class("TestCommand", keyword: keyword)
+      keyword = random_keyword
+      desired_command_class = command_class(keyword: keyword)
 
-    Butbot::Dispatcher.register(desired_command_class)
-    command_object = Butbot::Dispatcher.dispatch("text including the #{keyword} word")
-    expect(command_object).to be_a desired_command_class
+      Dispatcher.register(desired_command_class)
+      command_object = Dispatcher.dispatch("text including the #{keyword} word")
+      expect(command_object).to be_a desired_command_class
+    end
+
+    it "returns a nil command if it can't find a command" do
+      command_object = Dispatcher.dispatch('text with no keyword')
+      expect(command_object).to respond_to :call
+    end
   end
 end

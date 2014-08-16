@@ -9,4 +9,6 @@ gem 'nokogiri'
 
 group :test do
   gem 'rspec'
+  gem 'rspec-its'
+  gem 'timecop'
 end

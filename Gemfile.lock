@@ -28,6 +28,9 @@ GEM
     rspec-expectations (3.0.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.0.0)
+    rspec-its (1.0.1)
+      rspec-core (>= 2.99.0.beta1)
+      rspec-expectations (>= 2.99.0.beta1)
     rspec-mocks (3.0.4)
       rspec-support (~> 3.0.0)
     rspec-support (3.0.4)
@@ -41,6 +44,7 @@ GEM
       eventmachine (>= 1.0.0)
       rack (>= 1.0.0)
     tilt (1.4.1)
+    timecop (0.7.1)
 
 PLATFORMS
   ruby
@@ -50,5 +54,7 @@ DEPENDENCIES
   nokogiri
   pry
   rspec
+  rspec-its
   sinatra
   thin
+  timecop
