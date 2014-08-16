@@ -5,18 +5,15 @@ module Budbot
     module_function
 
     COMMANDS = {}
+    COMMANDS.default = -> { "I don't understand…" }
 
     def dispatch(action)
-      _, command = COMMANDS.find { |keyword, _| action.include?(keyword.to_s) }
-      if command
-        command.new
-      else
-        -> { "I don't understand…" }
-      end
+      key = COMMANDS.keys.find { |keyword| action.include?(keyword.to_s) }
+      COMMANDS[key]
     end
 
     def register(command)
-      COMMANDS[command.keyword] = command
+      COMMANDS[command.keyword] = command.new
     end
   end
 end
